@@ -1,9 +1,9 @@
 {
-    "name": "TCSS 450 Lab Web Service",
+    "name": "Raindrop App Web Service",
     "version": "0.1.0",
-    "description": "The TCSS 450 Lab Web Service API Documentation",
+    "description": "The Raindrop App Web Service API Documentation",
     "title": "Lab API Doc",
-    "url" : "https://cfb3-lab4-backend-2020sp.herokuapp.com",
+    "url" : "https://team-6-tcss-450.herokuapp.com",
     "order": [
       "Hello",
       "Params",
