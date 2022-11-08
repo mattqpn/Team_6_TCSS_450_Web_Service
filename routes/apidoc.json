@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "The Raindrop App Web Service API Documentation",
     "title": "Lab API Doc",
-    "url" : "https://team-6-tcss-450.herokuapp.com/doc",
+    "url" : "https://team-6-tcss-450.herokuapp.com",
     "order": [
       "Hello",
       "Params",
