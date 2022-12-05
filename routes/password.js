@@ -38,7 +38,7 @@ router.post('/', (request, response, next) => {
     const theQuery = `SELECT saltedhash, salt, Credentials.memberid FROM Credentials
                       INNER JOIN Members ON
                       Credentials.memberid=Members.memberid 
-                      WHERE Members.email=$1`
+                      WHERE Members.email LIKE $1`
     const values = [email]
     pool.query(theQuery, values)
         .then(result => {
@@ -88,7 +88,7 @@ router.post('/', (request, response, next) => {
     let salt = generateSalt(32)
     let salted_hash = generateHash(newPassword, salt)
 
-    let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId = $3"
+    let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId LIKE $3"
     let values = [salted_hash, salt, request.memberid]
     pool.query(theQuery, values)
         .then(result => {
