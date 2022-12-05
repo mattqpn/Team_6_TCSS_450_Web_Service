@@ -38,7 +38,7 @@ router.post('/', (request, response, next) => {
     const theQuery = `SELECT saltedhash, salt, Credentials.memberid FROM Credentials
                       INNER JOIN Members ON
                       Credentials.memberid=Members.memberid 
-                      WHERE Members.email LIKE $1`
+                      WHERE Members.email=$1`
     const values = [email]
     pool.query(theQuery, values)
         .then(result => {
@@ -97,7 +97,7 @@ router.post('/', (request, response, next) => {
                 success: true,
                 email: request.body.email
             })
-            sendEmail("our.email@lab.com", request.body.email, "Password Changed!", "Your password has been changed.")
+            sendEmail("AppRaindrop@gmail.com", request.body.email, "Password Changed!", "Your password has been changed.")
         })
         .catch((error) => {
             //log the error for debugging
