@@ -10,6 +10,9 @@ const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
 const generateHash = require('../utilities').generateHash
+const generateSalt = require('../utilities').generateSalt
+
+const sendEmail = require('../utilities').sendEmail
 
 const router = express.Router()
 
@@ -39,7 +42,7 @@ router.post('/', (request, response, next) => {
                       INNER JOIN Members ON
                       Credentials.memberid=Members.memberid 
                       WHERE Members.email=$1`
-    const values = [email]
+    const values = [request.body.email]
     pool.query(theQuery, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -59,7 +62,7 @@ router.post('/', (request, response, next) => {
             let storedSaltedHash = result.rows[0].saltedhash 
 
             //Generate a hash based on the stored salt and the provided password
-            let providedSaltedHash = generateHash(oldPassword, salt)
+            let providedSaltedHash = generateHash(request.body.oldPassword, salt)
 
             //Did our salted hash match their salted hash?
             if (storedSaltedHash === providedSaltedHash ) {
@@ -78,7 +81,7 @@ router.post('/', (request, response, next) => {
             console.log("************************")
             console.log(err.stack)
             response.status(400).send({
-                message: "other error, see detail 2",
+                message: "other error, see detail",
                 message: err.detail
             })
         })
@@ -86,15 +89,16 @@ router.post('/', (request, response, next) => {
 }, (request, response) => {
     //We're storing salted hashes to make our application more secure
     let salt = generateSalt(32)
-    let salted_hash = generateHash(newPassword, salt)
+    let salted_hash = generateHash(request.body.newPassword, salt)
 
-    let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId LIKE $3"
+    let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId=$3"
     let values = [salted_hash, salt, request.memberid]
     pool.query(theQuery, values)
         .then(result => {
             //We successfully changed the password!
             response.status(201).send({
                 success: true,
+                message: 'Password changed!',
                 email: request.body.email
             })
             sendEmail("AppRaindrop@gmail.com", request.body.email, "Password Changed!", "Your password has been changed.")
@@ -105,7 +109,7 @@ router.post('/', (request, response, next) => {
             console.log(error)
 
             response.status(400).send({
-                message: "other error, see detail 3",
+                message: "other error, see detail",
                 detail: error.detail
             })
         })
