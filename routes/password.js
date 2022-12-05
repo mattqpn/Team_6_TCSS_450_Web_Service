@@ -48,6 +48,9 @@ router.post('/', (request, response, next) => {
                 })
                 return
             }
+            
+            //stash the memberid into the request object to be used in the next function
+            request.memberid = result.rows[0].memberid
 
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt
@@ -85,7 +88,7 @@ router.post('/', (request, response, next) => {
     let salted_hash = generateHash(newPassword, salt)
 
     let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId = $3"
-    let values = [salted_hash, salt]
+    let values = [salted_hash, salt, request.memberid]
     pool.query(theQuery, values)
         .then(result => {
             //We successfully changed te password!
