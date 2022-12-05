@@ -84,31 +84,31 @@ router.post('/', (request, response, next) => {
         })
 
 }, (request, response) => {
-    //We're storing salted hashes to make our application more secure
-    let salt = generateSalt(32)
-    let salted_hash = generateHash(newPassword, salt)
+    // //We're storing salted hashes to make our application more secure
+    // let salt = generateSalt(32)
+    // let salted_hash = generateHash(newPassword, salt)
 
-    let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId = $3"
-    let values = [salted_hash, salt, request.memberid]
-    pool.query(theQuery, values)
-        .then(result => {
-            //We successfully changed te password!
-            response.status(201).send({
-                success: true,
-                email: request.body.email
-            })
-            sendEmail("our.email@lab.com", request.body.email, "Password Changed!", "Your password has been changed.")
-        })
-        .catch((error) => {
-            //log the error for debugging
-            console.log("PWD change")
-            console.log(error)
+    // let theQuery = "UPDATE CREDENTIALS SET SaltedHash = $1, Salt = $2 WHERE MemberId = $3"
+    // let values = [salted_hash, salt, request.memberid]
+    // pool.query(theQuery, values)
+    //     .then(result => {
+    //         //We successfully changed the password!
+    //         response.status(201).send({
+    //             success: true,
+    //             email: request.body.email
+    //         })
+    //         sendEmail("our.email@lab.com", request.body.email, "Password Changed!", "Your password has been changed.")
+    //     })
+    //     .catch((error) => {
+    //         //log the error for debugging
+    //         console.log("PWD change")
+    //         console.log(error)
 
-            response.status(400).send({
-                message: "other error, see detail 3",
-                detail: error.detail
-            })
-        })
+    //         response.status(400).send({
+    //             message: "other error, see detail 3",
+    //             detail: error.detail
+    //         })
+    //     })
 })
 
 module.exports = router
