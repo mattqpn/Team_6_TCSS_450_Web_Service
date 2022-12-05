@@ -78,6 +78,7 @@ router.post('/', (request, response, next) => {
             console.log("************************")
             console.log(err.stack)
             response.status(400).send({
+                message: "other error, see detail 2",
                 message: err.detail
             })
         })
@@ -104,7 +105,7 @@ router.post('/', (request, response, next) => {
             console.log(error)
 
             response.status(400).send({
-                message: "other error, see detail",
+                message: "other error, see detail 3",
                 detail: error.detail
             })
         })
