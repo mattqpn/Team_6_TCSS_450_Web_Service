@@ -12,7 +12,7 @@ let sendEmail = (sender, receiver, subject, message) => {
     service: 'gmail',
     auth: {
         user: 'AppRaindrop@gmail.com',
-        pass: 'TRPLGg6%'
+        pass: process.env.EMAIL_PASSWORD
     }
     });
 

@@ -18,6 +18,31 @@ const router = express.Router()
 
 /**
  * @api {post} /password Request to change password
+ * @apiName PostPassword
+ * 
+ * @apiParam {String} email a users email *unique
+ * @apiParam {String} oldPassword a users old password
+ * @apiParam {String} newPassword a users new password
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "email":"cfb3@fake.email",
+ *      "oldPassword":"test12345"
+ *      "newPassword":"new12345"
+ *  }
+ * 
+ * @apiSuccess (Success 201) {boolean} success true when the password is updated
+ * @apiSuccess (Success 201) {String} email the email of the user updated
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"'
+ * 
+ * @apiError (404: User not found) {String} message "User not found"
+ * 
+ * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
+ *  
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ * 
  */
 router.post('/', (request, response, next) => {
 
