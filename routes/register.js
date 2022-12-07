@@ -11,6 +11,7 @@ let isStringProvided = validation.isStringProvided
 
 const generateHash = require('../utilities').generateHash
 const generateSalt = require('../utilities').generateSalt
+const generateCode = require('../utilities').generateCode;
 
 const sendEmail = require('../utilities').sendEmail
 
@@ -104,6 +105,7 @@ router.post('/', (request, response, next) => {
         //watch this youtube video: https://www.youtube.com/watch?v=8ZtInClXe1Q
         let salt = generateSalt(32)
         let salted_hash = generateHash(request.body.password, salt)
+        let code = generateCode
 
         let theQuery = "INSERT INTO CREDENTIALS(MemberId, SaltedHash, Salt) VALUES ($1, $2, $3)"
         let values = [request.memberid, salted_hash, salt]
@@ -114,7 +116,8 @@ router.post('/', (request, response, next) => {
                     success: true,
                     email: request.body.email
                 })
-                sendEmail("AppRaindrop@gmail.com", request.body.email, "Welcome to our App!", "Please verify your Email account.")
+                sendEmail("AppRaindrop@gmail.com", request.body.email, "Welcome to our App!", "Please verify your Email account.\n" 
+                    + "Enter code in app: " + code)
             })
             .catch((error) => {
                 //log the error for debugging
