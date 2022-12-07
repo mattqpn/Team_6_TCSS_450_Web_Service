@@ -107,8 +107,8 @@ router.post('/', (request, response, next) => {
         let salted_hash = generateHash(request.body.password, salt)
         let code = generateCode
 
-        let theQuery = "INSERT INTO CREDENTIALS(MemberId, SaltedHash, Salt) VALUES ($1, $2, $3)"
-        let values = [request.memberid, salted_hash, salt]
+        let theQuery = "INSERT INTO CREDENTIALS(MemberId, SaltedHash, Salt, verifycode) VALUES ($1, $2, $3, $4)"
+        let values = [request.memberid, salted_hash, salt, code]
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user!
