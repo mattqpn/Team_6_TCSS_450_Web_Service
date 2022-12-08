@@ -31,7 +31,7 @@ app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
 
-app.use('/contacts', middleware.checkToken, require('./routes/ccontacts.js'))
+app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'))
 
 app.use('/password', require('./routes/password.js'))
 
