@@ -172,7 +172,7 @@ router.post("/", (request, response, next) => {
  */ 
 
     router.get("/", (request, response, next) => {
-        let query = 'SELECT * FROM Contacts WHERE MemberID_A=$1'
+        let query = 'SELECT * FROM Members WHERE MemberID_A=$1'
         let values = [request.decoded.memberid]
 
         pool.query(query, values)
