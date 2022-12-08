@@ -172,8 +172,8 @@ router.post("/", (request, response, next) => {
  */ 
 
     router.get("/", (request, response, next) => {
-        let query = 'SELECT * FROM CONTACTS WHERE MemberID_A=$1'
-        let values = [request.decoded.memberID]
+        let query = 'SELECT * FROM Contacts WHERE MemberID_A=$1'
+        let values = [request.decoded.memberid]
 
         pool.query(query, values)
             .then(result => {
@@ -202,7 +202,7 @@ router.post("/", (request, response, next) => {
                     FROM Contacts 
                     INNER JOIN Members ON (Contacts.MemberID_B = Members.MemberID)
                     WHERE MemberID_A=$1 AND Verified=1`
-        let values = [request.decoded.memberID]
+        let values = [request.decoded.memberid]
         pool.query(query, values)
             .then(result => {
                 response.send({
