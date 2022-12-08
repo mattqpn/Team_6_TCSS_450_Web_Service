@@ -160,7 +160,7 @@ router.get('/', (request, response, next) => {
         })
 })
 
-router.get('/verify/', (request, response, next) => {
+router.post('/verify/', (request, response, next) => {
     if (isStringProvided(request.headers.authorization) && request.headers.authorization.startsWith('Basic ')) {
         next()
     } else {
@@ -173,12 +173,12 @@ router.get('/verify/', (request, response, next) => {
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
 
     // code is password for
-    const [email, password] = credentials.split(':')
+    const [email, code] = credentials.split(':')
 
     if (isStringProvided(email) && isStringProvided(code)) {
         request.auth = { 
             "email" : email,
-            "password" : password
+            "code" : code
         }
         next()
     } else {
@@ -187,7 +187,81 @@ router.get('/verify/', (request, response, next) => {
         })
     }
 }, (request, response, next) => {
-    
+    const theQuery = `SELECT verifycode, Credentials.memberid FROM Credentials
+                      INNER JOIN Members ON
+                      Credentials.memberid=Members.memberid 
+                      WHERE Members.email=$1 RETURNING MemberID`
+    const values = [request.auth.email]
+
+    pool.query(theQuery, values)
+        .then(result => { 
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: 'User not found' 
+                })
+                return
+            }
+            //Retrieve the verifycode provided from the DB
+            let verifyCode = result.rows[0].verifycode
+
+            //obtain user provided verifycode
+            let providedVerifyCode = request.auth.verifycode
+
+            //Did our salted hash match their salted hash?
+            if (verifyCode === providedVerifyCode) {
+                //credentials match. get a new JWT
+                token = jwt.sign(
+                    {
+                        "email": request.auth.email,
+                        "memberid": result.rows[0].memberid
+                    },
+                    config.secret,
+                    { 
+                        expiresIn: '14 days' // expires in 14 days
+                    }
+                )
+                //stash the memberid into the request object to be used in the next function
+                request.memberid = result.rows[0].memberid
+                next()
+            } else {
+                //credentials dod not match
+                response.status(400).send({
+                    message: 'Verification code did not match' 
+                })
+            }
+        })
+        .catch((err) => {
+            //log the error
+            console.log("Error on SELECT************************")
+            console.log(err)
+            console.log("************************")
+            console.log(err.stack)
+            response.status(400).send({
+                message: err.detail
+            })
+        })
+}, (request, response) => {
+    const theQuery = "UPDATE Members SET verification=1 WHERE MemberId=$3"
+    const values = [request.memberid]
+    pool.query(theQuery, values)
+        .then(result => { 
+            //package and send the results
+            response.json({
+                success: true,
+                message: 'Authentication successful!',
+                token: token
+            })
+        })
+        .catch((err) => {
+            //log the error
+            console.log("Error on SELECT************************")
+            console.log(err)
+            console.log("************************")
+            console.log(err.stack)
+            response.status(400).send({
+                message: err.detail
+            })
+        })
 })
 
 module.exports = router
