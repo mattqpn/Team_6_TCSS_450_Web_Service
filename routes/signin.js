@@ -226,7 +226,7 @@ router.get('/verify/', (request, response, next) => {
             } else {
                 //credentials dod not match
                 response.status(400).send({
-                    message: 'Verification code did not match' 
+                    message: 'Verification did not match' 
                 })
             }
         })
