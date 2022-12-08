@@ -17,6 +17,8 @@ const config = {
     secret: process.env.JSON_WEB_TOKEN
 }
 
+let token
+
 /**
  * @api {get} /auth Request to sign a user in the system
  * @apiName GetAuth
@@ -70,7 +72,7 @@ router.get('/', (request, response, next) => {
             message: "Malformed Authorization Header"
         })
     }
-}, (request, response) => {
+}, (request, response, next) => {
     const theQuery = `SELECT saltedhash, salt, Credentials.memberid FROM Credentials
                       INNER JOIN Members ON
                       Credentials.memberid=Members.memberid 
@@ -97,7 +99,7 @@ router.get('/', (request, response, next) => {
             //Did our salted hash match their salted hash?
             if (storedSaltedHash === providedSaltedHash ) {
                 //credentials match. get a new JWT
-                let token = jwt.sign(
+                token = jwt.sign(
                     {
                         "email": request.auth.email,
                         "memberid": result.rows[0].memberid
@@ -107,12 +109,7 @@ router.get('/', (request, response, next) => {
                         expiresIn: '14 days' // expires in 14 days
                     }
                 )
-                //package and send the results
-                response.json({
-                    success: true,
-                    message: 'Authentication successful!',
-                    token: token
-                })
+                next()
             } else {
                 //credentials dod not match
                 response.status(400).send({
@@ -130,6 +127,42 @@ router.get('/', (request, response, next) => {
                 message: err.detail
             })
         })
+}, (request, response) => {
+    const theQuery = "SELECT verification FROM Members WHERE Members.email=$1"
+    const values = [request.auth.email]
+    pool.query(theQuery, values)
+        .then(result => { 
+            if (result.rowCount == 1) {
+                //package and send the results
+                response.json({
+                    success: true,
+                    message: 'User is not verified. Authentication successful!',
+                    token: token
+                })
+            } else {
+                //package and send the results
+                response.json({
+                    success: true,
+                    message: 'Authentication successful!',
+                    token: token
+                })
+            }
+        })
+        .catch((err) => {
+            //log the error
+            console.log("Error on SELECT************************")
+            console.log(err)
+            console.log("************************")
+            console.log(err.stack)
+            response.status(400).send({
+                message: err.detail
+            })
+        })
+})
+
+router.get('/verify/', (request, response, next) => {
+    const theQuery = "SELECT verification FROM Members WHERE Members.email=$1"
+    const values = [request.decoded.email]
 })
 
 module.exports = router
