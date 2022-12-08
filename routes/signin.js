@@ -161,8 +161,33 @@ router.get('/', (request, response, next) => {
 })
 
 router.get('/verify/', (request, response, next) => {
-    const theQuery = "SELECT verification FROM Members WHERE Members.email=$1"
-    const values = [request.decoded.email]
+    if (isStringProvided(request.headers.authorization) && request.headers.authorization.startsWith('Basic ')) {
+        next()
+    } else {
+        response.status(400).json({ message: 'Missing Authorization Header' })
+    }
+}, (request, response, next) => {
+    // obtain auth credentials from HTTP Header
+    const base64Credentials =  request.headers.authorization.split(' ')[1]
+    
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
+
+    // code is password for
+    const [email, password] = credentials.split(':')
+
+    if (isStringProvided(email) && isStringProvided(code)) {
+        request.auth = { 
+            "email" : email,
+            "password" : password
+        }
+        next()
+    } else {
+        response.status(400).send({
+            message: "Malformed Authorization Header"
+        })
+    }
+}, (request, response, next) => {
+    
 })
 
 module.exports = router
