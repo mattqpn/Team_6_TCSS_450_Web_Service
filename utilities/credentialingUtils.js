@@ -18,6 +18,13 @@ let generateHash = (pw, salt) =>
 let generateSalt = (size) => 
     crypto.randomBytes(size).toString("hex")
 
+/**
+ * Creates a random string of decimal characters with the length of 6.
+ * @returns random string of decimal characters
+ */
+ let generateCode =
+    Math.floor(Math.random() * 900000 + 100000).toString()
+
 module.exports = { 
-    generateHash, generateSalt
+    generateHash, generateSalt, generateCode
 }
