@@ -160,7 +160,7 @@ router.get('/', (request, response, next) => {
         })
 })
 
-router.post('/verify/', (request, response, next) => {
+router.get('/verify/', (request, response, next) => {
     if (isStringProvided(request.headers.authorization) && request.headers.authorization.startsWith('Basic ')) {
         next()
     } else {
