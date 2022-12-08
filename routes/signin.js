@@ -205,7 +205,7 @@ router.get('/verify/', (request, response, next) => {
             let verifyCode = result.rows[0].verifycode
 
             //obtain user provided verifycode
-            let providedVerifyCode = request.auth.verifycode
+            let providedVerifyCode = request.auth.code
 
             //Did our salted hash match their salted hash?
             if (verifyCode === providedVerifyCode) {
