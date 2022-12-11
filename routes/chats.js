@@ -27,7 +27,7 @@ router.get("/", (request, response, next) => {
 
         }).catch(err => {
             response.status(400).send({
-                message: "SQL Error",
+                message: "SQL Error when grabbing all of chat",
                 error: err
             })
         })
