@@ -35,9 +35,8 @@ router.get("/", (request, response) => {
 // },(request, response) => {
 
     //Retrieve the members
-    // let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
-    //             WHERE MemberId=$1`
-    let query = 'SELECT CHATS.CHATID, MESSAGES.MESSAGE FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.CHATID=CHATMEMBERS.CHATID INNER JOIN MESSAGES ON CHATS.CHATID=MESSAGES.CHATID WHERE CHATMEMBERS.MEMBERID=$1 '
+    let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                WHERE MemberId=$1`
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
