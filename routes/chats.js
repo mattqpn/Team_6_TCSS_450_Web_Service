@@ -48,7 +48,7 @@ router.get("/", (request, response, next) => {
             })
         }).catch(err => {
             response.status(400).send({
-                message: "SQL Error",
+                message: "SQL Error pt 2",
                 error: err
             })
         })
