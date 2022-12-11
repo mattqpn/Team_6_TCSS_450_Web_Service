@@ -11,32 +11,29 @@ const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
 
+/**
+ * @api {get} /chats Request to get the all the chats of user in database
+ * @apiName GetChats
+ * @apiGroup Chats
+ * 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiSuccess {Number} rowCount the number of messages returned
+ * @apiSuccess {Object[]} members List of members in the chat
+ * @apiSuccess {String} messages.email The email for the member in the chat
+ * 
+ * @apiError (404: ChatId Not Found) {String} message "Chat ID Not Found"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number" 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */ 
 router.get("/", (request, response) => {
-//     let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
-//     let values = [request.decoded.memberid]
-//     pool.query(query, values)
-//         .then(result => {
-//             if(result.rowCount==0) {
-//                 response.status(404).send({
-//                     message: "User not found"
-//                 })
-//             } else {
-//                 next()
-//             }
-
-
-//         }).catch(err => {
-//             response.status(400).send({
-//                 message: "SQL Error when grabbing all of chat",
-//                 error: err
-//             })
-//         })
-        
-// },(request, response) => {
-
     //Retrieve the members
-    let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
-                WHERE MemberId=$1`
+    let query = `SELECT CHATS.ChatId, CHATS.Name FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                WHERE MemberId=$1`  
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
@@ -422,6 +419,8 @@ router.delete("/:chatId/:email", (request, response, next) => {
         })
     }
 )
+
+
 
 
 module.exports = router
