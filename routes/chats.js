@@ -11,30 +11,28 @@ const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
 
-router.get("/", (request, response, next) => {
-    let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
-    let values = [request.decoded.memberid]
-    pool.query(query, values)
-        .then(result => {
-            if(result.rowCount==0) {
-                response.status(404).send({
-                    message: "User not found"
-                })
-            } else {
-                next()
-            }
+router.get("/", (request, response) => {
+//     let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
+//     let values = [request.decoded.memberid]
+//     pool.query(query, values)
+//         .then(result => {
+//             if(result.rowCount==0) {
+//                 response.status(404).send({
+//                     message: "User not found"
+//                 })
+//             } else {
+//                 next()
+//             }
 
 
-        }).catch(err => {
-            response.status(400).send({
-                message: "SQL Error when grabbing all of chat",
-                error: err
-            })
-        })
+//         }).catch(err => {
+//             response.status(400).send({
+//                 message: "SQL Error when grabbing all of chat",
+//                 error: err
+//             })
+//         })
         
-},(request, response) => {
-
-
+// },(request, response) => {
 
     //Retrieve the members
     let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
