@@ -1,4 +1,5 @@
 //express is the framework we're going to use to handle requests
+const { response } = require('express')
 const express = require('express')
 
 //Access the connection to Heroku Database
@@ -8,6 +9,51 @@ const router = express.Router()
 
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
+
+
+router.get("/", (request, response, next) => {
+    let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
+    let values = [request.decoded.memberid]
+    pool.query(query, values)
+        .then(result => {
+            if(result.rowCount==0) {
+                response.status(404).send({
+                    message: "User not found"
+                })
+            } else {
+                next()
+            }
+
+
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error when grabbing all of chat",
+                error: err
+            })
+        })
+        
+},(request, response) => {
+
+
+
+    //Retrieve the members
+    let query = `SELECT ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                WHERE MemberId=$1`
+    let values = [request.decoded.memberid]
+    pool.query(query, values)
+        .then(result => {
+            response.send({
+                rowCount : result.rowCount,
+                rows: result.rows
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+});
+
 
 /**
  * @apiDefine JSONError
@@ -235,7 +281,7 @@ router.get("/:chatId", (request, response, next) => {
             }
         }).catch(error => {
             response.status(400).send({
-                message: "SQL Error",
+                message: "SQL Error, Get",
                 error: error
             })
         })
@@ -378,5 +424,6 @@ router.delete("/:chatId/:email", (request, response, next) => {
         })
     }
 )
+
 
 module.exports = router
