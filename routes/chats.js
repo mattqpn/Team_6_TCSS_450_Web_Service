@@ -31,11 +31,11 @@ let isStringProvided = validation.isStringProvided
  * @apiUse JSONError
  */ 
 router.get("/", (request, response) => {
-    //Retrieve the members
-    // let query = `SELECT CHATS.ChatId, CHATS.Name, CHATS. FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
-    //             WHERE MemberId=$1`  
-    let query = `SELECT CHATS.ChatId, CHATS.Name, MEMBERS.Username, CHATS. FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
-                WHERE MemberId=$1 INNER JOIN ON MEMBERS ON CHATSMEMBESR.ChatId=MEMBERS.MemberId WHERE MEMBERId`
+    //Retrieve the members and chat name
+    let query = `SELECT CHATS.ChatId, CHATS.Name, CHATS. FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                WHERE MemberId=$1`  
+    // let query = `SELECT CHATS.ChatId, CHATS.Name, MEMBERS.Username, CHATS. FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+    //             WHERE MemberId=$1 INNER JOIN ON MEMBERS ON CHATSMEMBESR.ChatId=MEMBERS.MemberId WHERE MEMBERId`
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
