@@ -10,6 +10,51 @@ const router = express.Router()
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
+
+router.get("/", (request, response, next) => {
+    let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
+    let values = [request.decoded.memberid]
+    pool.query(query, values)
+        .then(result => {
+            if(result.rowCount==0) {
+                response.status(404).send({
+                    message: "User not found"
+                })
+            } else {
+                next()
+            }
+
+
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+        
+},(request, response) => {
+
+
+
+    //Retrieve the members
+    let query = `SELECT ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                WHERE MemberId=$1`
+    let values = [request.decoded.memberid]
+    pool.query(query, values)
+        .then(result => {
+            response.send({
+                rowCount : result.rowCount,
+                rows: result.rows
+            })
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+});
+
+
 /**
  * @apiDefine JSONError
  * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
@@ -236,7 +281,7 @@ router.get("/:chatId", (request, response, next) => {
             }
         }).catch(error => {
             response.status(400).send({
-                message: "SQL Error",
+                message: "SQL Error, Get",
                 error: error
             })
         })
@@ -379,50 +424,6 @@ router.delete("/:chatId/:email", (request, response, next) => {
         })
     }
 )
-
-router.get("/", (request, response, next) => {
-        let query = 'SELECT * FROM MEMBERS WHERE MEMBERID=$1'
-        let values = [request.decoded.memberid]
-        pool.query(query, values)
-            .then(result => {
-                if(result.rowCount==0) {
-                    response.status(404).send({
-                        message: "User not found"
-                    })
-                } else {
-                    next()
-                }
-
-
-            }).catch(err => {
-                response.status(400).send({
-                    message: "SQL Error",
-                    error: err
-                })
-            })
-            
-    },(request, response) => {
-
-
-
-        //Retrieve the members
-        let query = `SELECT ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
-                    WHERE MemberId=$1`
-        let values = [request.decoded.memberid]
-        pool.query(query, values)
-            .then(result => {
-                response.send({
-                    rowCount : result.rowCount,
-                    rows: result.rows
-                })
-            }).catch(err => {
-                response.status(400).send({
-                    message: "SQL Error",
-                    error: err
-                })
-            })
-});
-
 
 
 module.exports = router
