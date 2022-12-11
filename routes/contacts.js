@@ -182,11 +182,6 @@ router.post("/", (request, response, next) => {
                         message: "No Contacts"
                     })
                 } else {
-                    // response.send({
-                        // memberID_A: request.params.memberID_A,
-                        // rowCount : result.rowCount,
-                        // rows: result.rows
-                    // })
                     next()
                 }
             }).catch(error => {
