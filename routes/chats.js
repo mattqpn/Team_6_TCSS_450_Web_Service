@@ -379,4 +379,25 @@ router.delete("/:chatId/:email", (request, response, next) => {
     }
 )
 
+router.get("/", (request, response) => {
+        //Retrieve the members
+        let query = `SELECT ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+                    WHERE MemberId=$1`
+        let values = [request.decoded.memberid]
+        pool.query(query, values)
+            .then(result => {
+                response.send({
+                    rowCount : result.rowCount,
+                    rows: result.rows
+                })
+            }).catch(err => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: err
+                })
+            })
+});
+
+
+
 module.exports = router
