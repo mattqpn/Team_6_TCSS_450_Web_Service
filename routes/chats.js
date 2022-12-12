@@ -32,7 +32,9 @@ let isStringProvided = validation.isStringProvided
  */ 
 router.get("/", (request, response) => {
     //Retrieve the members
-    let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+    // let query = `SELECT CHATS.ChatId FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
+    //             WHERE MemberId=$1`
+    let query = `SELECT CHATS.ChatId, CHATS.Name FROM CHATS INNER JOIN CHATMEMBERS ON CHATS.ChatId=CHATMEMBERS.ChatId 
                 WHERE MemberId=$1`
     let values = [request.decoded.memberid]
     pool.query(query, values)
